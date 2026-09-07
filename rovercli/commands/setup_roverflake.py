@@ -21,8 +21,7 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     os.environ["ROS_DISTRO"] = distro
 
     input("Installing apt packages... Press Enter to continue.")
-    install_apt_pkgs(pkg_list_files)
-
+    install_apt_pkgs(pkg_list_files, distro)
     if dst.exists():
         print(f"Destination {dst} already exists.")
     else:
@@ -55,7 +54,7 @@ def ensure_bashrc_sources_roverrc(bashrc_path: Path, roverrc_path: Path):
             f.write("\n")
         f.write(f"{source_line}\n")
 
-def install_apt_pkgs(pkg_list_files: list[Path]):
+def install_apt_pkgs(pkg_list_files: list[Path], distro: str):
     all_pkgs = []
     for file in pkg_list_files:
         with open(file, "r") as f:
@@ -67,6 +66,7 @@ def install_apt_pkgs(pkg_list_files: list[Path]):
         check_result(result, "Failed to obtain sudo privileges.")
         result = subprocess.run(["sudo", "apt", "update"], check=True)
         check_result(result, "Failed to update APT package list.")
+        all_pkgs = [str(s).replace("${ROS_DISTRO}", distro) for s in all_pkgs]
         result = subprocess.run(["sudo", "apt", "install", "-y", *all_pkgs], check=True)
         check_result(result, "Failed to install APT packages.")
 
