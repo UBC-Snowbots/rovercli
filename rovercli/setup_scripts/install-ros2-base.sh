@@ -27,6 +27,7 @@ else
     # now we have ros2 apt packages. celebrate this.
     sudo apt install -y ros-$ROS_DISTRO-ros-base
     sudo apt install -y ros-dev-tools
+    sudo apt install -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp
 
 fi
 
