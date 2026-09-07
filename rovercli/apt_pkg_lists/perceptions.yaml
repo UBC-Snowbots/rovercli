@@ -1,4 +1,4 @@
-pkgs:
+pkgs_after_ros:
   - ffmpeg
   - ros-${ROS_DISTRO}-cv-bridge
   - ros-${ROS_DISTRO}-ffmpeg-image-transport-msgs

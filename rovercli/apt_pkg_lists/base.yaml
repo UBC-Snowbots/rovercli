@@ -1,5 +1,5 @@
 # List of base APT packages required for RoverFlake
-pkgs:
+pkgs_start:
   - curl
   - git
   - btop

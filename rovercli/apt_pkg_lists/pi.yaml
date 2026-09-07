@@ -1,4 +1,4 @@
-pkgs: 
+pkgs_after_ros: 
   - libgpiod-dev
   - libpigpio-dev
   - libpigpiod-dev

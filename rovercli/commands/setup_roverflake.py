@@ -21,7 +21,7 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     os.environ["ROS_DISTRO"] = distro
 
     input("Installing apt packages... Press Enter to continue.")
-    install_apt_pkgs(pkg_list_files, distro)
+    install_apt_pkgs(pkg_list_files, distro, "pkgs_start")
     if dst.exists():
         print(f"Destination {dst} already exists.")
     else:
@@ -36,6 +36,9 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     for script in setup_scripts:
         result = subprocess.run(["bash", str(script)], check=True)
         check_result(result, f"Failed to run setup script: {script}")
+
+    input("Installing apt packages after ROS setup... Press Enter to continue.")
+    install_apt_pkgs(pkg_list_files, distro, "pkgs_after_ros")
 
     render_roverrc(dst, distro, ROVER_ENV_DIR / ".roverrc.template", Path.home() / ".roverrc")
     ensure_bashrc_sources_roverrc(Path.home() / ".bashrc", Path.home() / ".roverrc")
@@ -54,12 +57,12 @@ def ensure_bashrc_sources_roverrc(bashrc_path: Path, roverrc_path: Path):
             f.write("\n")
         f.write(f"{source_line}\n")
 
-def install_apt_pkgs(pkg_list_files: list[Path], distro: str):
+def install_apt_pkgs(pkg_list_files: list[Path], distro: str, key: str):
     all_pkgs = []
     for file in pkg_list_files:
         with open(file, "r") as f:
             data = yaml.safe_load(f)
-            all_pkgs.extend(data.get("pkgs", []))
+            all_pkgs.extend(data.get(key, []))
 
     if all_pkgs:
         result = subprocess.run(["sudo", "-v"], check=True)
