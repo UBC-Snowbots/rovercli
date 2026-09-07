@@ -7,4 +7,3 @@ pkgs:
   - libgtkmm-3.0-dev # GUI Package
   - python3-rosdep
   - libsfml-dev
-  - libopencv-contrib-dev

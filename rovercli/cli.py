@@ -25,7 +25,7 @@ def build_parser():
     setup_parser.add_argument(
         "--apt-pkg-list",
         nargs="+",
-        default=["base"],
+        default=["base", "perceptions"],
         help="Names (without .yaml) of apt package lists from apt_pkg_lists/ to install",
     )
     setup_parser.add_argument(
