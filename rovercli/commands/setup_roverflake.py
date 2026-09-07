@@ -18,6 +18,8 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     Sets up the Roverflake environment.
     """
 
+    os.environ["ROS_DISTRO"] = distro
+
     input("Installing apt packages... Press Enter to continue.")
     install_apt_pkgs(pkg_list_files)
 
@@ -30,7 +32,6 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
         check_result(result, "Failed to clone RoverFlake repository.")
 
     os.environ["ROVERFLAKE_ROOT"] = str(dst)
-    os.environ["ROS_DISTRO"] = distro
 
     input("Running setup scripts... Press Enter to continue.")
     for script in setup_scripts:
