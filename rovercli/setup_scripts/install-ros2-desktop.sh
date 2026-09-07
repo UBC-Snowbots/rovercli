@@ -28,6 +28,7 @@ else
     sudo apt install -y ros-$ROS_DISTRO-desktop
     sudo apt install -y ros-dev-tools
     sudo apt install -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp
+    sudo apt install -y python3-rosdep
 
 fi
 
