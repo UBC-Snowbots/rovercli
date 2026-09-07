@@ -31,7 +31,7 @@ def build_parser():
     setup_parser.add_argument(
         "--setup-script",
         nargs="+",
-        default=["install-ros2-base.sh", "install_rosdeps.sh"],
+        default=["update_submodules.sh", "install-ros2-base.sh", "install_rosdeps.sh"],
         help="Names of setup scripts from setup_scripts/ to run, in order",
     )
     setup_parser.set_defaults(func=_run_setup)
