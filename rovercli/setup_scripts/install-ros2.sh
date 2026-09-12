@@ -1,7 +1,7 @@
 source $ROVERFLAKE_ROOT/setup_scripts/utils/common.sh
 
 echo CHECKING FOR ROS2 DESKTOP
-if is_package_installed "ros-$ROS_DISTRO-desktop"; then
+if is_package_installed "$ROS_INSTALL"; then
     echo ROS $ROS_DISTRO FOR $USER IS ALREADY INSTALLED
 else
     locale  # check for UTF-8
@@ -14,7 +14,7 @@ else
     locale  # verify setttings
 
     sudo apt install -y software-properties-common
-    sudo add-apt-repository universe
+    sudo add-apt-repository -y universe
 
     # add keys and sources so we can use apt to install everything
     sudo apt update && sudo apt install curl -y
@@ -25,10 +25,8 @@ else
     sudo apt update
 
     # now we have ros2 apt packages. celebrate this.
-    sudo apt install -y ros-$ROS_DISTRO-desktop
+    sudo apt install -y $ROS_INSTALL
     sudo apt install -y ros-dev-tools
-    sudo apt install -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp
-    sudo apt install -y python3-rosdep
 
 fi
 

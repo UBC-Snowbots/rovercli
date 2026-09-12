@@ -31,7 +31,7 @@ def build_parser():
     setup_parser.add_argument(
         "--setup-script",
         nargs="+",
-        default=["update_submodules.sh", "install-ros2-desktop.sh", "install_rosdeps.sh", "install_phidgets.sh"],
+        default=["update_submodules.sh", "install_rosdeps.sh", "install_phidgets.sh"],
         help="Names of setup scripts from setup_scripts/ to run, in order",
     )
     setup_parser.set_defaults(func=_run_setup)

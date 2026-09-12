@@ -6,3 +6,8 @@ pkgs_start:
   - tmux
   - libgtkmm-3.0-dev # GUI Package
   - libsfml-dev
+  - libgpiod-dev
+
+pkgs_after_ros:
+  - python3-rosdep
+  - ros-${ROS_DISTRO}-rmw-cyclonedds-cpp

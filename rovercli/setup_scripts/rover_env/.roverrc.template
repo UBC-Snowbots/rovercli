@@ -10,4 +10,4 @@ export ROS_LOCALHOST_ONLY=0
 export ROS_INTERFACE=ztwdjkvykg
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export CYCLONEDDS_URI=file://${ROVERFLAKE_ROOT}/network_stuff/dds_profile_cyclone.xml
-cd $ROVERFLAKE_ROOT
+@@CD_TO_RF
