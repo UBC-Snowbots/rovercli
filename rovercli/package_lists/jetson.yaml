@@ -1,0 +1,7 @@
+packages:
+  - cameras_cpp
+  - ptz_cam
+  - rover_launchers
+  - rover_msgs
+  - rover_utils
+  - rover_manager

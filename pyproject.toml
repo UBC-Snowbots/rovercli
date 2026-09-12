@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rovercli"
+version = "0.1.0"
+description = "Command line tools and Textual TUI for UBC Rover operations"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "textual>=0.50",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+rovercli = "rovercli.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["rovercli*"]
+
+[tool.setuptools.package-data]
+rovercli = ["package_lists/*.yaml"]

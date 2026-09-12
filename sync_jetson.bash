@@ -1,1 +1,0 @@
-python3 main.py sync --remote-host jetson@192.168.1.5 --external-pkgs --packages cameras_cpp ptz_cam rover_launchers rover_msgs rover_utils rover_manager

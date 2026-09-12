@@ -2,3 +2,5 @@ env/
 __pycache__/
 .vscode/
 .venv
+*.egg*/
+rovercli/setup_scripts/old_scripts/
