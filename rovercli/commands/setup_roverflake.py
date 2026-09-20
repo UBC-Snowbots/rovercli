@@ -3,7 +3,8 @@ import subprocess, os
 import yaml
 from string import Template
 
-ROVERFLAKE_GIT = "https://github.com/UBC-Snowbots/RoverFlake2.git"
+ROVERFLAKE_GIT_HTTPS = "https://github.com/UBC-Snowbots/RoverFlake2.git"
+ROVERFLAKE_GIT_SSH = "git@github.com:UBC-Snowbots/RoverFlake2.git"
 
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 APT_PKG_LISTS_DIR = PACKAGE_ROOT / "apt_pkg_lists"
@@ -21,31 +22,33 @@ def input_loop(prompt: str, valid_responses: list[str]) -> str:
             return response
         print(f"Invalid response. Please enter one of: {', '.join(valid_responses)}")
 
-def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[Path], distro: str):
+def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[Path], distro: str, ros_version: str | None = None, git_protocol: str = "ssh", cd_to_roverflake: str | None = None):
     """
     Sets up the Roverflake environment.
     """
 
     os.environ["ROS_DISTRO"] = distro
     print("Setting up Ros and RoverFlake!\n")
-    r = input_loop("Would you like to install 1: ros base (no rviz, etc) or 2: ros desktop?: ", ["1", "2"])
-    if r == "1":
+    if ros_version == None:
+        r = input_loop("Would you like to install 1: ros base (no rviz, etc) or 2: ros desktop?: ", ["1", "2"])
+    if r == "1" or ros_version == "base":
         os.environ["ROS_INSTALL"] = f"ros-{distro}-ros-base"
-    elif r == "2":
+    elif r == "2" or ros_version == "desktop":
         os.environ["ROS_INSTALL"] = f"ros-{distro}-desktop"
 
     print(f"Selected ROS installation: {os.environ['ROS_INSTALL']}")
 
-    r = input_loop("Would you like to cd into RoverFlake directory on startup? (useful for onboard computers) [y/n]: ", ["y", "n"])
-    cd_roverflake = True if r == "y" else False
+    if cd_to_roverflake == None:
+        cd_to_roverflake = input_loop("Would you like to cd into RoverFlake directory on startup? (useful for onboard computers) [y/n]: ", ["y", "n"])
+    _cd_to_roverflake = True if cd_to_roverflake == "y" else False
 
     install_apt_pkgs(pkg_list_files, distro, "pkgs_start")
     if dst.exists():
         print(f"Destination {dst} already exists.")
     else:
-        input(f"Destination {dst} does not exist. Press Enter to create and clone RoverFlake into it.")
+        git_url = ROVERFLAKE_GIT_HTTPS if git_protocol == "https" else ROVERFLAKE_GIT_SSH
         dst.mkdir(parents=True, exist_ok=True)
-        result = subprocess.run(["git", "clone", ROVERFLAKE_GIT, str(dst)], check=True)
+        result = subprocess.run(["git", "clone", git_url, str(dst)], check=True)
         check_result(result, "Failed to clone RoverFlake repository.")
 
     os.environ["ROVERFLAKE_ROOT"] = str(dst)
@@ -56,7 +59,7 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
 
     install_apt_pkgs(pkg_list_files, distro, "pkgs_after_ros")
 
-    render_roverrc(dst, distro, ROVER_ENV_DIR / ".roverrc.template", Path.home() / ".roverrc", cd_to_roverflake=cd_roverflake)
+    render_roverrc(dst, distro, ROVER_ENV_DIR / ".roverrc.template", Path.home() / ".roverrc", cd_to_roverflake=_cd_to_roverflake)
     ensure_bashrc_sources_roverrc(Path.home() / ".bashrc", Path.home() / ".roverrc")
 
     print("RoverFlake setup complete.")

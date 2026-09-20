@@ -34,6 +34,26 @@ def build_parser():
         default=["update_submodules.sh", "install_rosdeps.sh", "install_phidgets.sh"],
         help="Names of setup scripts from setup_scripts/ to run, in order",
     )
+    setup_parser.add_argument(
+        "--ros-version",
+        required=False,
+        choices=[None, "base", "desktop"],
+        default=None,
+        help="Ros base or desktop version to install"
+    )
+    setup_parser.add_argument(
+        "--git-protocol",
+        required=False,
+        choices=["https", "ssh"],
+        default="ssh",
+        help="Git protocol to use for cloning RoverFlake",
+    )
+    setup_parser.add_argument(
+        "--cd-roverflake",
+        choices=[None, "y", "n"],
+        default=None,
+        help="Whether to cd into the RoverFlake directory on startup"
+    )
     setup_parser.set_defaults(func=_run_setup)
 
     ip_parser = subparsers.add_parser("print-ip-table", help="Print rover network addresses")
@@ -63,7 +83,7 @@ def _run_sync(args):
 def _run_setup(args):
     pkg_list_files = [APT_PKG_LISTS_DIR / f"{name}.yaml" for name in args.apt_pkg_list]
     setup_scripts = [SETUP_SCRIPTS_DIR / name for name in args.setup_script]
-    setup_roverflake(Path.home() / args.dst, pkg_list_files, setup_scripts, args.distro)
+    setup_roverflake(Path.home() / args.dst, pkg_list_files, setup_scripts, args.distro, ros_version=args.ros_version, git_protocol=args.git_protocol, cd_to_roverflake=args.cd_roverflake)
 
 
 def _run_tui():
