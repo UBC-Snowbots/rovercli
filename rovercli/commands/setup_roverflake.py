@@ -29,6 +29,7 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
 
     os.environ["ROS_DISTRO"] = distro
     print("Setting up Ros and RoverFlake!\n")
+    r = None
     if ros_version == None:
         r = input_loop("Would you like to install 1: ros base (no rviz, etc) or 2: ros desktop?: ", ["1", "2"])
     if r == "1" or ros_version == "base":
