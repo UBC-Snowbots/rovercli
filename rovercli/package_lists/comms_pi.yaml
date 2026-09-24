@@ -1,0 +1,5 @@
+packages:
+  - comms_base_control
+  - rover_manager
+  - rover_msgs
+  - rover_utils

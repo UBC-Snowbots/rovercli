@@ -1,1 +1,0 @@
-python3 main.py sync --remote-host ubuntu@192.168.1.51 --packages comms_base_control rover_manager rover_msgs rover_utils
