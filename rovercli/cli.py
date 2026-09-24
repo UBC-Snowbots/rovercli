@@ -1,6 +1,8 @@
 import argparse
+from pathlib import Path
 
-from .commands import print_ip_table, sync, time_sync
+from .commands import print_ip_table, setup_roverflake, sync, time_sync
+from .commands.setup_roverflake import APT_PKG_LISTS_DIR, SETUP_SCRIPTS_DIR
 
 
 def build_parser():
@@ -16,6 +18,43 @@ def build_parser():
     sync_parser.add_argument("--package-list", type=str, default=None)
     sync_parser.add_argument("--no-external-pkgs", action="store_true")
     sync_parser.set_defaults(func=_run_sync)
+
+    setup_parser = subparsers.add_parser("setup", help="Set up the RoverFlake environment on this machine")
+    setup_parser.add_argument("--dst", default="RoverFlake2", help="Destination directory, relative to home")
+    setup_parser.add_argument("--distro", required=True, help="ROS distro to install (e.g. jazzy)")
+    setup_parser.add_argument(
+        "--apt-pkg-list",
+        nargs="+",
+        default=["base", "perceptions"],
+        help="Names (without .yaml) of apt package lists from apt_pkg_lists/ to install",
+    )
+    setup_parser.add_argument(
+        "--setup-script",
+        nargs="+",
+        default=["update_submodules.sh", "install_rosdeps.sh", "install_phidgets.sh"],
+        help="Names of setup scripts from setup_scripts/ to run, in order",
+    )
+    setup_parser.add_argument(
+        "--ros-version",
+        required=False,
+        choices=[None, "base", "desktop"],
+        default=None,
+        help="Ros base or desktop version to install"
+    )
+    setup_parser.add_argument(
+        "--git-protocol",
+        required=False,
+        choices=["https", "ssh"],
+        default="ssh",
+        help="Git protocol to use for cloning RoverFlake",
+    )
+    setup_parser.add_argument(
+        "--cd-roverflake",
+        choices=[None, "y", "n"],
+        default=None,
+        help="Whether to cd into the RoverFlake directory on startup"
+    )
+    setup_parser.set_defaults(func=_run_setup)
 
     ip_parser = subparsers.add_parser("print-ip-table", help="Print rover network addresses")
     ip_parser.set_defaults(func=lambda args: print_ip_table())
@@ -39,6 +78,12 @@ def _run_sync(args):
         external_pkgs=not args.no_external_pkgs,
         package_list=args.package_list,
     )
+
+
+def _run_setup(args):
+    pkg_list_files = [APT_PKG_LISTS_DIR / f"{name}.yaml" for name in args.apt_pkg_list]
+    setup_scripts = [SETUP_SCRIPTS_DIR / name for name in args.setup_script]
+    setup_roverflake(Path.home() / args.dst, pkg_list_files, setup_scripts, args.distro, ros_version=args.ros_version, git_protocol=args.git_protocol, cd_to_roverflake=args.cd_roverflake)
 
 
 def _run_tui():

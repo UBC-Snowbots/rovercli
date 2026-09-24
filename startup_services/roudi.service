@@ -1,0 +1,16 @@
+[Unit]
+Description=Rover Jetson
+After=network.target
+
+[Service]
+Type=simple
+User=rv
+
+ExecStart=/bin/bash -c 'source /opt/ros/jazzy/setup.bash; iox-roudi'
+
+WorkingDirectory=/home/rv
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
