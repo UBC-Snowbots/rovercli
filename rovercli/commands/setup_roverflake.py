@@ -52,8 +52,12 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
         result = subprocess.run(["git", "clone", git_url, str(dst)], check=True)
         check_result(result, "Failed to clone RoverFlake repository.")
         if git_protocol == "https":
-            result = subprocess.run(["bash", "-c", f"cd {dst} && git config url.https://github.com/.insteadOf git@github.com:"], check=True)
+            result = subprocess.run(['git config --global url."https://github.com/".insteadOf "git@github.com:"'], check=True)
             check_result(result, "Failed to configure git for HTTPS instead of SSH.")
+
+    dds = dst / "network_stuff" / "dds_profile_cyclone.xml"
+    if not dds.exists():
+        dds.touch(exist_ok=True)
 
     os.environ["ROVERFLAKE_ROOT"] = str(dst)
     setup_scripts = [ROS_INSTALL, *setup_scripts]
