@@ -36,3 +36,16 @@ rovercli sync --src-root RoverFlake2 --dst-root RoverFlake2 --remote-host rv@192
 ```
 
 Other commands are `rovercli print-ip-table` and `rovercli time-sync`.
+
+## `docker`
+Start the Docker Compose `rover` service using the configuration selected for
+the host OS, then open a shell in the container:
+
+```sh
+rovercli docker
+```
+
+By default, an existing image is reused and Compose builds it if it is missing.
+Pass `--rebuild` to force an image rebuild. Pass `--kill-all` to immediately
+kill every running container on the active Docker daemon; this also affects
+containers unrelated to Rover.
