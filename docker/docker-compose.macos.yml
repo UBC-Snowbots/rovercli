@@ -1,8 +1,8 @@
 services:
   rover:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ./Dockerfile
     image: roverflake2:dev
     working_dir: /RoverFlake2
     tty: true
@@ -12,6 +12,7 @@ services:
     environment:
       DISPLAY: host.docker.internal:0
       ROVERFLAKE_ROOT: /RoverFlake2
+      ROVERCLI_FORCE_SETUP: "${ROVERCLI_FORCE_SETUP:-}"
 
 volumes:
   roverflake_workspace:

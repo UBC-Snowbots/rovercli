@@ -15,8 +15,8 @@ services:
   # bash
   rover: # default container, add more containers by making more services
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
     image: roverflake2:dev
     container_name: rover_dev
     working_dir: /RoverFlake2
@@ -33,20 +33,22 @@ services:
     environment:
       - ROVERFLAKE_ROOT=/RoverFlake2
       - DISPLAY=${DISPLAY}
+      - ROVERCLI_FORCE_SETUP=${ROVERCLI_FORCE_SETUP:-}
     network_mode: host
   rover_ros: # GUI support + NVIDIA GPU support
     container_name: rover_gpu
     image: roverflake2:gpu
     working_dir: /RoverFlake2
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
     runtime: nvidia
     privileged: true
     environment:
       - DISPLAY=${DISPLAY}
       - XAUTHORITY=/tmp/.docker.xauth # auto accept
       - ROVERFLAKE_ROOT=/RoverFlake2
+      - ROVERCLI_FORCE_SETUP=${ROVERCLI_FORCE_SETUP:-}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
       - __GLX_VENDOR_LIBRARY_NAME=nvidia
@@ -69,8 +71,8 @@ services:
     network_mode: host
   rover_x11: # Do not use if you don't have a nvidia GPU with supported cuda cores
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
     image: roverflake2:dev
     container_name: rover_dev
     working_dir: /RoverFlake2
@@ -86,19 +88,21 @@ services:
       - DISPLAY=${DISPLAY}
       - ROVERFLAKE_ROOT=/RoverFlake2
       - MUJOCO_GL=glfw # or egl (headless GUI)
+      - ROVERCLI_FORCE_SETUP=${ROVERCLI_FORCE_SETUP:-}
     network_mode: host
   rover_gpu: # GUI support + NVIDIA GPU support
     container_name: rover_gpu
     image: roverflake2:gpu
     working_dir: /RoverFlake2
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
     runtime: nvidia
     environment:
       - DISPLAY=${DISPLAY}
       - XAUTHORITY=/tmp/.docker.xauth # auto accept
       - ROVERFLAKE_ROOT=/RoverFlake2
+      - ROVERCLI_FORCE_SETUP=${ROVERCLI_FORCE_SETUP:-}
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=all
       - __GLX_VENDOR_LIBRARY_NAME=nvidia

@@ -1,6 +1,8 @@
+import os
 import platform
 import subprocess
 from pathlib import Path
+from typing import Optional
 
 
 def _compose_filename() -> str:
@@ -36,25 +38,56 @@ def kill_all_containers():
     print(f"Killed {len(container_ids)} running Docker container(s).")
 
 
-def start_docker(build: bool = False, kill_all: bool = False):
+def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: Optional[Path] = None):
     if kill_all:
         kill_all_containers()
         return
 
+    env = None
+    if roverflake_path is not None or build:
+        env = os.environ.copy()
+    if roverflake_path is not None:
+        roverflake_path = roverflake_path.expanduser().resolve()
+        if not roverflake_path.is_dir():
+            raise NotADirectoryError(f"RoverFlake2 path is not a directory: {roverflake_path}")
+        env["ROVERFLAKE_PATH"] = str(roverflake_path)
+    if build:
+        env["ROVERCLI_FORCE_SETUP"] = "1"
+
     compose_filename = _compose_filename()
     package_root = Path(__file__).resolve().parents[2]
-    compose_file = package_root / compose_filename
-    if not compose_file.is_file():
-        compose_file = Path.cwd() / compose_filename
+    compose_file = package_root / "docker" / compose_filename
     if not compose_file.is_file():
         raise FileNotFoundError(f"Could not find {compose_filename}; run rovercli docker from the rovercli checkout.")
 
     compose = ["docker", "compose", "-f", str(compose_file)]
-    up_command = [*compose, "up", "-d"]
+    if roverflake_path is not None:
+        dev_compose_file = compose_file.parent / "docker-compose.dev.yml"
+        if not dev_compose_file.is_file():
+            raise FileNotFoundError(f"Could not find {dev_compose_file}.")
+        compose.extend(["-f", str(dev_compose_file)])
+
+    container_name = "rovercli-rover"
+    existing_container = subprocess.run(
+        ["docker", "inspect", container_name],
+        capture_output=True,
+        text=True,
+    )
+    if existing_container.returncode == 0:
+        if build:
+            subprocess.run(["docker", "rm", "--force", container_name], check=True)
+        else:
+            print(f"Entering existing {container_name} container...", flush=True)
+            subprocess.run(
+                ["docker", "start", "--attach", "--interactive", container_name],
+                check=True,
+            )
+            return
+
+    run_command = [*compose, "run", "--name", container_name]
     if build:
-        up_command.append("--build")
-    up_command.append("rover")
+        run_command.append("--build")
+    run_command.extend(["rover", "bash"])
 
     print(f"Starting rover with {compose_filename}...", flush=True)
-    subprocess.run(up_command, cwd=compose_file.parent, check=True)
-    subprocess.run([*compose, "exec", "rover", "bash"], cwd=compose_file.parent, check=True)
+    subprocess.run(run_command, cwd=compose_file.parent, check=True, env=env)

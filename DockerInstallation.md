@@ -8,6 +8,10 @@ matching `rover` service, then opens a shell in it. Use
 `rovercli docker --rebuild` to force an image rebuild. By default, Compose reuses
 an existing image and builds if it is missing. Windows and macOS use Docker
 Desktop configurations; Fedora uses its SELinux-aware configuration.
+For local RoverFlake2 development, pass the path to a host checkout with
+`rovercli docker --roverflake-path <path-to-RoverFlake2>`. The checkout is
+bind-mounted at `/RoverFlake2`, so edits are visible in the container. Without
+this option, Docker continues to use its persistent named workspace volume.
 To immediately kill all running containers on the active Docker daemon and exit
 without starting Rover, use `rovercli docker --kill-all`. This also kills
 containers unrelated to Rover.
@@ -17,7 +21,11 @@ containers unrelated to Rover.
 Docker Desktop uses the Windows-specific configuration automatically. It uses
 standard Docker networking and does not configure GUI forwarding or USB/CAN
 device access. Use a Linux host for rover hardware access or ROS discovery that
-depends on host networking.
+depends on host networking. For example, in PowerShell:
+
+```powershell
+rovercli docker --roverflake-path C:\Users\you\Github\Rover\RoverFlake2
+```
 
 ## Fedora
 

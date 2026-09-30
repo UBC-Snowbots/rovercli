@@ -1,0 +1,6 @@
+services:
+  rover:
+    volumes:
+      - type: bind
+        source: ${ROVERFLAKE_PATH:?--roverflake-path is required}
+        target: /RoverFlake2
