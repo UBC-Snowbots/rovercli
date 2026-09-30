@@ -1,7 +1,5 @@
-source $ROVERCLI_ROOT/setup_scripts/utils/common.sh
-
 echo CHECKING FOR ROS2 DESKTOP
-if is_package_installed "$ROS_INSTALL"; then
+if dpkg-query -W -f='${Status}' "$ROS_INSTALL" 2>/dev/null | grep -qx 'install ok installed'; then
     echo ROS $ROS_DISTRO FOR $USER IS ALREADY INSTALLED
 else
     locale  # check for UTF-8

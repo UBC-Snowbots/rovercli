@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [ "$ROVERCLI_FORCE_SETUP" = "1" ] && [ ! -f "$HOME/.rovercli-setup-complete" ]; then
+if [ ! -f "$HOME/.rovercli-setup-complete" ]; then
   rovercli setup \
     --dst "$ROVERFLAKE_ROOT" \
     --distro "$ROS_DISTRO" \
@@ -12,8 +12,6 @@ if [ "$ROVERCLI_FORCE_SETUP" = "1" ] && [ ! -f "$HOME/.rovercli-setup-complete" 
     --cd-roverflake n
   touch "$HOME/.rovercli-setup-complete"
 fi
-export ROVERCLI_FORCE_SETUP=0
-
 if [ -f "$HOME/.roverrc" ]; then
   source "$HOME/.roverrc"
 fi

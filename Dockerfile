@@ -1,5 +1,5 @@
-# Ubuntu runs inside the image on every host. The CLI setup installs ROS Jazzy
-# and the RoverFlake dependencies into this container.
+# Ubuntu runs inside the image on every host. The entrypoint installs ROS Jazzy
+# and the RoverFlake dependencies on the first container start.
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive \

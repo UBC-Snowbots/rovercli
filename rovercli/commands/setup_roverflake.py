@@ -44,7 +44,9 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
     _cd_to_roverflake = True if cd_to_roverflake == "y" else False
 
     install_apt_pkgs(pkg_list_files, distro, "pkgs_start")
-    if dst.exists():
+    if dst.exists() and any(dst.iterdir()):
+        if not (dst / "src").is_dir():
+            raise RuntimeError(f"Destination {dst} is not an empty directory or a RoverFlake checkout.")
         print(f"Destination {dst} already exists.")
     else:
         git_url = ROVERFLAKE_GIT_HTTPS if git_protocol == "https" else ROVERFLAKE_GIT_SSH

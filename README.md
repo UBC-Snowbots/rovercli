@@ -46,6 +46,8 @@ rovercli docker
 ```
 
 By default, an existing image is reused and Compose builds it if it is missing.
-Pass `--rebuild` to force an image rebuild. Pass `--kill-all` to immediately. Pass `--roverflake-path <path-to-RoverFlake2>` to specify a roverflake path.
-kill every running container on the active Docker daemon; this also affects
-containers unrelated to Rover.
+The first container start installs ROS and RoverFlake2. Pass `--rebuild` to
+rebuild the image, or `--roverflake-path <path-to-RoverFlake2>` to use a local
+checkout. Pass `--kill-all` to kill every running container on the active Docker
+daemon; this also affects containers unrelated to Rover. See
+[DockerInstallation.md](DockerInstallation.md) for host-specific GUI setup.

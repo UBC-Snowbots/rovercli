@@ -14,6 +14,8 @@ def _compose_filename() -> str:
     if system == "Darwin":
         return "docker-compose.macos.yml"
     if system == "Linux":
+        if os.environ.get("WSL_DISTRO_NAME") or "microsoft" in platform.release().lower():
+            return "docker-compose.wsl.yml"
         os_release = Path("/etc/os-release")
         if os_release.exists():
             for line in os_release.read_text().splitlines():
@@ -45,17 +47,12 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
         kill_all_containers()
         return
 
-    env = None
-    if roverflake_path is not None or build:
-        env = os.environ.copy()
+    env = os.environ.copy() if roverflake_path is not None else None
     if roverflake_path is not None:
         roverflake_path = roverflake_path.expanduser().resolve()
         if not roverflake_path.is_dir():
             raise NotADirectoryError(f"RoverFlake2 path is not a directory: {roverflake_path}")
         env["ROVERFLAKE_PATH"] = str(roverflake_path)
-    if build:
-        env["ROVERCLI_FORCE_SETUP"] = "1"
-
     compose_filename = _compose_filename()
     package_root = Path(__file__).resolve().parents[2]
     compose_file = package_root / "docker" / compose_filename
@@ -69,7 +66,7 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
             raise FileNotFoundError(f"Could not find {dev_compose_file}.")
         compose.extend(["-f", str(dev_compose_file)])
 
-    if platform.system() == "Linux" and os.environ.get("DISPLAY", "").startswith(":"):
+    if compose_filename in ("docker-compose.yml", "docker-compose.fedora.yml") and os.environ.get("DISPLAY", "").startswith(":"):
         if shutil.which("xhost"):
             result = subprocess.run(["xhost", "+si:localuser:root"], check=False)
             if result.returncode != 0:
@@ -77,7 +74,7 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
         else:
             print("xhost is unavailable; GUI apps in Docker may fail.", file=sys.stderr)
 
-    container_name = "rovercli-rover"
+    container_name = "rovercli-rover-wsl" if compose_filename == "docker-compose.wsl.yml" else "rovercli-rover"
     existing_container = subprocess.run(
         ["docker", "inspect", container_name],
         capture_output=True,
