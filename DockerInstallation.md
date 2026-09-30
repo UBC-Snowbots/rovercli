@@ -8,6 +8,10 @@ matching `rover` service, then opens a shell in it. Use
 `rovercli docker --rebuild` to force an image rebuild. By default, Compose reuses
 an existing image and builds if it is missing. Windows, WSL, and macOS use
 separate Docker Desktop configurations; Fedora uses its SELinux-aware configuration.
+To enter a specific existing container without building, run
+`rovercli docker --container <name-or-id>`. Use `docker ps -a` to find its name
+or ID. Running containers get a new Bash shell; stopped containers resume their
+original process and attach to it.
 For local RoverFlake2 development, pass the path to a host checkout with
 `rovercli docker --roverflake-path <path-to-RoverFlake2>`. The checkout is
 bind-mounted at `/RoverFlake2`, so edits are visible in the container. Without

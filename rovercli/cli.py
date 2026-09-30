@@ -69,6 +69,10 @@ def build_parser():
     docker_parser = subparsers.add_parser("docker", help="Start Docker container")
     docker_parser.add_argument("--rebuild", action="store_true", help="Rebuild the image before starting")
     docker_parser.add_argument(
+        "--container",
+        help="Enter an existing Docker container by name or ID without building",
+    )
+    docker_parser.add_argument(
         "--roverflake-path",
         type=Path,
         help="Use a local RoverFlake2 checkout mounted at /RoverFlake2",
@@ -109,7 +113,10 @@ def _run_tui():
 
 
 def _run_docker(args):
-    start_docker(build=args.rebuild, kill_all=args.kill_all, roverflake_path=args.roverflake_path)
+    try:
+        start_docker(build=args.rebuild, kill_all=args.kill_all, roverflake_path=args.roverflake_path, container=args.container)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
 
 def main():
