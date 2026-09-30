@@ -15,6 +15,8 @@ this option, Docker continues to use its persistent named workspace volume.
 To immediately kill all running containers on the active Docker daemon and exit
 without starting Rover, use `rovercli docker --kill-all`. This also kills
 containers unrelated to Rover.
+On Linux desktops with a local X11 display, `rovercli docker` uses `xhost` to
+grant the container's root user display access before opening the container.
 
 ## Windows
 
@@ -31,8 +33,9 @@ rovercli docker --roverflake-path C:\Users\you\Github\Rover\RoverFlake2
 
 The Fedora Compose file uses the host network, `/dev`, and the X11 socket for
 rover hardware and GUI access. If your desktop uses Wayland, Xwayland must be
-running and `DISPLAY` must be set. Permit local root access to X11 before
-starting a GUI application:
+running and `DISPLAY` must be set. `rovercli docker` grants the container's
+root user X11 access automatically when `xhost` is available. For manual
+Compose use, grant access on the host before starting a GUI application:
 
 ```sh
 xhost +si:localuser:root

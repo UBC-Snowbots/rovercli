@@ -1,6 +1,8 @@
 import os
 import platform
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -66,6 +68,14 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
         if not dev_compose_file.is_file():
             raise FileNotFoundError(f"Could not find {dev_compose_file}.")
         compose.extend(["-f", str(dev_compose_file)])
+
+    if platform.system() == "Linux" and os.environ.get("DISPLAY", "").startswith(":"):
+        if shutil.which("xhost"):
+            result = subprocess.run(["xhost", "+si:localuser:root"], check=False)
+            if result.returncode != 0:
+                print("Could not grant Docker access to the X11 display; GUI apps may fail.", file=sys.stderr)
+        else:
+            print("xhost is unavailable; GUI apps in Docker may fail.", file=sys.stderr)
 
     container_name = "rovercli-rover"
     existing_container = subprocess.run(
