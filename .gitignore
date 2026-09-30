@@ -2,5 +2,7 @@ env/
 __pycache__/
 .vscode/
 .venv
+.idea/
+uv.lock
 *.egg*/
 rovercli/setup_scripts/old_scripts/

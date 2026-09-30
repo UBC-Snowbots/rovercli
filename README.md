@@ -11,6 +11,20 @@ python -m pip install -e . --break-system-packages
 This installs Textual and creates the `rovercli` terminal command. Running
 `rovercli` without arguments opens the TUI.
 
+If `rovercli` is not already on your PATH, run the setup script after
+installation. It detects whether zsh or bash is being used and updates the
+corresponding shell configuration file:
+
+```sh
+bash rovercli/setup_scripts/add-rovercli-to-path.sh
+```
+
+To update the current shell immediately, source the script instead:
+
+```sh
+source rovercli/setup_scripts/add-rovercli-to-path.sh
+```
+
 
 # Commands
 ## `setup`
