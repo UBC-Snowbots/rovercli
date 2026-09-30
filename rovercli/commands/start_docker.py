@@ -1,3 +1,4 @@
+import hashlib
 import os
 import platform
 import shutil
@@ -47,6 +48,12 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
         kill_all_containers()
         return
 
+    package_root = Path(__file__).resolve().parents[2]
+    if roverflake_path is None:
+        nearby_checkout = package_root.parent / "RoverFlake2"
+        if (nearby_checkout / "src").is_dir():
+            roverflake_path = nearby_checkout
+
     env = os.environ.copy() if roverflake_path is not None else None
     if roverflake_path is not None:
         roverflake_path = roverflake_path.expanduser().resolve()
@@ -54,7 +61,6 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
             raise NotADirectoryError(f"RoverFlake2 path is not a directory: {roverflake_path}")
         env["ROVERFLAKE_PATH"] = str(roverflake_path)
     compose_filename = _compose_filename()
-    package_root = Path(__file__).resolve().parents[2]
     compose_file = package_root / "docker" / compose_filename
     if not compose_file.is_file():
         raise FileNotFoundError(f"Could not find {compose_filename}; run rovercli docker from the rovercli checkout.")
@@ -75,6 +81,9 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
             print("xhost is unavailable; GUI apps in Docker may fail.", file=sys.stderr)
 
     container_name = "rovercli-rover-wsl" if compose_filename == "docker-compose.wsl.yml" else "rovercli-rover"
+    if roverflake_path is not None:
+        checkout_id = hashlib.sha256(str(roverflake_path).encode()).hexdigest()[:10]
+        container_name = f"{container_name}-local-{checkout_id}"
     existing_container = subprocess.run(
         ["docker", "inspect", container_name],
         capture_output=True,

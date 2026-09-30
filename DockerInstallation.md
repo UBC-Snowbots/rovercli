@@ -10,8 +10,13 @@ an existing image and builds if it is missing. Windows, WSL, and macOS use
 separate Docker Desktop configurations; Fedora uses its SELinux-aware configuration.
 For local RoverFlake2 development, pass the path to a host checkout with
 `rovercli docker --roverflake-path <path-to-RoverFlake2>`. The checkout is
-bind-mounted at `/RoverFlake2`, so edits are visible in the container. Without
-this option, Docker continues to use its persistent named workspace volume.
+bind-mounted at `/RoverFlake2`, so edits are visible in the container. If a
+`RoverFlake2` checkout sits beside the `rovercli` checkout, the CLI uses it
+automatically. Otherwise it uses the persistent named workspace volume.
+Checkout-backed containers have a separate name for each checkout, so an
+existing named-volume container cannot hide the bind mount.
+Restart a MoveIt launch to reload changes to its robot description; rebuild the
+workspace inside the container when new files or packages are added.
 To immediately kill all running containers on the active Docker daemon and exit
 without starting Rover, use `rovercli docker --kill-all`. This also kills
 containers unrelated to Rover.
