@@ -16,13 +16,13 @@ installation. It detects whether zsh or bash is being used and updates the
 corresponding shell configuration file:
 
 ```sh
-bash rovercli/setup_scripts/add-rovercli-to-path.sh
+bash ./add-rovercli-to-path.sh
 ```
 
 To update the current shell immediately, source the script instead:
 
 ```sh
-source rovercli/setup_scripts/add-rovercli-to-path.sh
+source ./add-rovercli-to-path.sh
 ```
 
 
