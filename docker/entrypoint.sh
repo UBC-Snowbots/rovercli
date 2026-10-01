@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# A host bind mount can be owned by a different UID than container root.
+if [ -e "$ROVERFLAKE_ROOT/.git" ]; then
+  git config --global --add safe.directory "$ROVERFLAKE_ROOT"
+  git config --global --add safe.directory "$ROVERFLAKE_ROOT/*"
+fi
+# Bind-mounted checkouts skip the clone path that normally configures HTTPS.
+git config --global url.https://github.com/.insteadOf git@github.com:
+
 if [ ! -f "$HOME/.rovercli-setup-complete" ]; then
   rovercli setup \
     --dst "$ROVERFLAKE_ROOT" \
