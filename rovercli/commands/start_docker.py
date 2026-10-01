@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+MANAGED_CONTAINER_LABEL = "rovercli.managed=true"
+
 
 def _compose_filename() -> str:
     system = platform.system()
@@ -51,6 +53,31 @@ def _container_state(container: str) -> Optional[str]:
     return result.stdout.strip() if result.returncode == 0 else None
 
 
+def _managed_containers() -> list[str]:
+    result = subprocess.run(
+        ["docker", "ps", "--all", "--filter", f"label={MANAGED_CONTAINER_LABEL}", "--format", "{{.Names}}"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.splitlines()
+
+
+def _select_container(containers: list[str]) -> str:
+    print("Multiple RoverCLI containers found:")
+    for index, name in enumerate(containers, start=1):
+        print(f"  {index}. {name}")
+    while True:
+        try:
+            selection = int(input("Select a container: "))
+        except ValueError:
+            print("Please enter a number from the list.")
+            continue
+        if 1 <= selection <= len(containers):
+            return containers[selection - 1]
+        print(f"Please enter a number from 1 to {len(containers)}.")
+
+
 def _enter_container(container: str, running: bool):
     print(f"Entering existing {container} container...", flush=True)
     if running:
@@ -72,18 +99,14 @@ def _allow_local_x11_root():
         print("xhost is unavailable; GUI apps in Docker may fail.", file=sys.stderr)
 
 
-def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: Optional[Path] = None, container: Optional[str] = None):
-    if container is not None and (kill_all or build or roverflake_path is not None):
-        raise ValueError("--container cannot be combined with --kill-all, --rebuild, or --roverflake-path")
+def start_docker(
+    build: bool = False,
+    kill_all: bool = False,
+    roverflake_path: Optional[Path] = None,
+    container_name: Optional[str] = None,
+):
     if kill_all:
         kill_all_containers()
-        return
-    if container is not None:
-        state = _container_state(container)
-        if state is None:
-            raise ValueError(f"Docker container {container!r} does not exist")
-        _allow_local_x11_root()
-        _enter_container(container, running=state == "true")
         return
 
     env = os.environ.copy() if roverflake_path is not None else None
@@ -107,7 +130,17 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
 
     _allow_local_x11_root()
 
-    container_name = "rovercli-rover-wsl" if compose_filename == "docker-compose.wsl.yml" else "rovercli-rover"
+    if container_name is None:
+        default_container_name = "rovercli-rover"
+        containers = _managed_containers()
+        if _container_state(default_container_name) is not None and default_container_name not in containers:
+            containers.append(default_container_name)
+        if len(containers) > 1:
+            container_name = _select_container(containers)
+        elif containers:
+            container_name = containers[0]
+        else:
+            container_name = default_container_name
     state = _container_state(container_name)
     if state is not None:
         if build:
@@ -116,7 +149,7 @@ def start_docker(build: bool = False, kill_all: bool = False, roverflake_path: O
             _enter_container(container_name, running=state == "true")
             return
 
-    run_command = [*compose, "run", "--name", container_name]
+    run_command = [*compose, "run", "--name", container_name, "--label", MANAGED_CONTAINER_LABEL]
     if build:
         run_command.append("--build")
     run_command.extend(["rover", "bash"])

@@ -1,5 +1,10 @@
 services:
   rover:
+    build:
+      context: ..
+      dockerfile: Dockerfile.roverflake
+      additional_contexts:
+        roverflake: ${ROVERFLAKE_PATH:?--roverflake-path is required}
     volumes:
       - type: bind
         source: ${ROVERFLAKE_PATH:?--roverflake-path is required}

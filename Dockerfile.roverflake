@@ -1,5 +1,5 @@
-# Ubuntu runs inside the image on every host. The entrypoint installs ROS Jazzy
-# and the RoverFlake dependencies on the first container start.
+# Ubuntu runs inside the image on every host. The CLI setup installs ROS Jazzy
+# and the RoverFlake dependencies from the supplied local checkout.
 FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -28,6 +28,8 @@ RUN python3 -m pip install -e /opt/rovercli --break-system-packages \
     && sed -i 's/\r$//' /usr/local/bin/rover-entrypoint.sh \
     && chmod +x /usr/local/bin/rover-entrypoint.sh \
     && rm -rf /root/.cache/pip
+
+COPY --from=roverflake . /RoverFlake2
 
 WORKDIR $ROVERFLAKE_ROOT
 

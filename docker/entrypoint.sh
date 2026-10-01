@@ -1,21 +1,6 @@
 #!/bin/bash
 set -e
 
-if [ ! -f "$HOME/.rovercli-setup-complete" ]; then
-  rovercli setup \
-    --dst "$ROVERFLAKE_ROOT" \
-    --distro "$ROS_DISTRO" \
-    --apt-pkg-list base perceptions \
-    --setup-script update_submodules.sh install_rosdeps.sh install_phidgets.sh \
-    --ros-version desktop \
-    --git-protocol https \
-    --cd-roverflake n
-  touch "$HOME/.rovercli-setup-complete"
-fi
-if [ -f "$HOME/.roverrc" ]; then
-  source "$HOME/.roverrc"
-fi
-
 if [ -f "/opt/ros/${ROS_DISTRO}/setup.bash" ]; then
   source "/opt/ros/${ROS_DISTRO}/setup.bash"
 fi
@@ -30,8 +15,8 @@ if [ ! -f "$ROVERFLAKE_ROOT/install/setup.bash" ]; then
   fi
 fi
 echo "Finished initial setup."
-if [ -f "$HOME/.roverrc" ]; then
-  source "$HOME/.roverrc"
+if [ -f "$ROVERFLAKE_ROOT/install/setup.bash" ]; then
+  source "$ROVERFLAKE_ROOT/install/setup.bash"
 fi
 
 exec "$@"
