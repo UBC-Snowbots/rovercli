@@ -13,7 +13,7 @@ fi
 case "${SHELL##*/}" in
     zsh)
         shell_name="zsh"
-        shell_rc="$HOME/.zshrc"
+        shell_rc="${ZDOTDIR:-$HOME}/.zshrc"
         ;;
     bash)
         shell_name="bash"
