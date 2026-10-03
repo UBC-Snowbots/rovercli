@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .commands import print_ip_table, setup_roverflake, sync, time_sync
+from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker
 from .commands.setup_roverflake import APT_PKG_LISTS_DIR, SETUP_SCRIPTS_DIR
 
 
@@ -65,6 +65,26 @@ def build_parser():
 
     tui_parser = subparsers.add_parser("tui", help="Open the Textual interface")
     tui_parser.set_defaults(func=lambda args: _run_tui())
+
+    docker_parser = subparsers.add_parser("docker", help="Start Docker container")
+    docker_parser.add_argument("--rebuild", action="store_true", help="Rebuild the image before starting")
+    docker_parser.add_argument(
+        "--container-name",
+        help="Name of the persistent Docker container",
+    )
+    docker_parser.add_argument(
+        "--roverflake-path",
+        type=Path,
+        help="Use a local RoverFlake2 checkout mounted at /RoverFlake2",
+    )
+    docker_parser.add_argument(
+        "--kill-all",
+        action="store_true",
+        help="Immediately kill every running container on the Docker daemon and exit",
+    )
+    docker_parser.set_defaults(func=_run_docker)
+
+
     return parser
 
 
@@ -90,6 +110,15 @@ def _run_tui():
     from .tui import run_tui
 
     run_tui()
+
+
+def _run_docker(args):
+    start_docker(
+        build=args.rebuild,
+        kill_all=args.kill_all,
+        roverflake_path=args.roverflake_path,
+        container_name=args.container_name,
+    )
 
 
 def main():

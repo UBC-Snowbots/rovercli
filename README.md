@@ -50,3 +50,22 @@ rovercli sync --src-root RoverFlake2 --dst-root RoverFlake2 --remote-host rv@192
 ```
 
 Other commands are `rovercli print-ip-table` and `rovercli time-sync`.
+
+## `docker`
+Start the Docker Compose `rover` service using the configuration selected for
+the host OS, then open a shell in the container:
+
+```sh
+rovercli docker
+```
+
+By default, an existing image is reused and Compose builds it if it is missing.
+Pass `--rebuild` to rebuild the image, or
+`--roverflake-path <path-to-RoverFlake2>` to build from and mount a local
+checkout. Containers persist after you exit, so later launches reuse the same
+container. Use `--container-name <name>` to maintain multiple independent
+containers. If multiple named RoverCLI containers exist and no name is
+provided, the CLI prompts you to choose one. Pass `--kill-all` to kill every
+running container on the active Docker daemon; this also affects containers
+unrelated to Rover. See
+[DockerInstallation.md](DockerInstallation.md) for host-specific GUI setup.

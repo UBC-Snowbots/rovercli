@@ -1,0 +1,44 @@
+# Ubuntu runs inside the image on every host. The entrypoint installs ROS Jazzy
+# and the RoverFlake dependencies on the first container start.
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC \
+    ROVERFLAKE_ROOT=/RoverFlake2 \
+    ROS_DISTRO=jazzy \
+    RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
+    ROS_DOMAIN_ID=101 \
+    ROVERCLI_ROOT=/opt/rovercli/rovercli \
+    PATH=/opt/rovercli-venv/bin:$PATH
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    python3 \
+    python3-pip \
+    sudo \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY pyproject.toml README.md /opt/rovercli/
+COPY rovercli/ /opt/rovercli/rovercli/
+COPY docker/entrypoint.sh /usr/local/bin/rover-entrypoint.sh
+
+RUN python3 -m pip install -e /opt/rovercli --break-system-packages \
+    && find /opt/rovercli/rovercli -type f -name '*.sh' -exec sed -i 's/\r$//' {} + \
+    && sed -i 's/\r$//' /usr/local/bin/rover-entrypoint.sh \
+    && chmod +x /usr/local/bin/rover-entrypoint.sh \
+    && rm -rf /root/.cache/pip
+
+WORKDIR $ROVERFLAKE_ROOT
+
+RUN rovercli setup \
+    --dst /RoverFlake2 \
+    --distro jazzy \
+    --apt-pkg-list base perceptions \
+    --setup-script update_submodules.sh install_rosdeps.sh install_phidgets.sh \
+    --ros-version desktop \
+    --git-protocol https \
+    --cd-roverflake n
+
+ENTRYPOINT ["/usr/local/bin/rover-entrypoint.sh"]
+CMD ["/bin/bash"]
