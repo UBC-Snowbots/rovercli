@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker
+from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker, save_config
 from .commands.setup_roverflake import APT_PKG_LISTS_DIR, SETUP_SCRIPTS_DIR
 
 
@@ -84,6 +84,16 @@ def build_parser():
     )
     docker_parser.set_defaults(func=_run_docker)
 
+    moteus_config_parser = subparsers.add_parser(
+        "moteus-save-config",
+        help="Save moteus configuration files grouped by CAN ID",
+    )
+    moteus_config_parser.add_argument(
+        "--name",
+        default="unnamed",
+        help="Name to include in the saved configuration filenames",
+    )
+    moteus_config_parser.set_defaults(func=_run_moteus_save_config)
 
     return parser
 
@@ -119,6 +129,10 @@ def _run_docker(args):
         roverflake_path=args.roverflake_path,
         container_name=args.container_name,
     )
+
+
+def _run_moteus_save_config(args):
+    save_config(name=args.name)
 
 
 def main():

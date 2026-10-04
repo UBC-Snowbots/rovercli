@@ -51,6 +51,17 @@ rovercli sync --src-root RoverFlake2 --dst-root RoverFlake2 --remote-host rv@192
 
 Other commands are `rovercli print-ip-table` and `rovercli time-sync`.
 
+## `moteus-save-config`
+Save the connected moteus configuration as one file per CAN ID in the
+`motor_config` directory:
+
+```sh
+rovercli moteus-save-config --name <name>
+```
+
+The `--name` option is optional; when omitted, saved files use `unnamed` in
+their filenames.
+
 ## `docker`
 Start the Docker Compose `rover` service using the configuration selected for
 the host OS, then open a shell in the container:
