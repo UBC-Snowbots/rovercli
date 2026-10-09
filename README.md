@@ -62,6 +62,36 @@ rovercli moteus-save-config --name <name>
 The `--name` option is optional; when omitted, saved files use `unnamed` in
 their filenames.
 
+## `moteus-calibrate`
+
+Calibrate the moteus controllers configured in a YAML file. When omitted, the
+command uses `motor_config/calibration.yaml`. The YAML maps each CAN ID to a
+list of calibration parameters. Before calibrating, the command discovers
+connected controllers with `moteus_tool --info` and skips configured IDs that
+are not available.
+
+```sh
+rovercli moteus-calibrate
+rovercli moteus-calibrate path/to/calibration.yaml
+```
+
+For example:
+
+```yaml
+1:
+  - "--cal-force-kv 339"
+```
+
+Each attempted calibration updates `motor_config/calibration_log.yaml` with
+the latest run for that CAN ID: UTC start/finish timestamps, parameters,
+success/failure/interruption status, exit code (when available), and the contents
+of the JSON report announced by `REPORT:` (stored as nested data in `output`,
+not an escaped string). The original
+report file is deleted only after its contents have been saved in the calibration
+log. Console output is still shown live but is not stored. Entries for other
+IDs, including skipped controllers, are preserved. A failed calibration is
+logged and stops the command.
+
 ## `docker`
 Start the Docker Compose `rover` service using the configuration selected for
 the host OS, then open a shell in the container:

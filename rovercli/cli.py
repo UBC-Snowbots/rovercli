@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker, save_config
+from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker, save_config, calibrate
 from .commands.setup_roverflake import APT_PKG_LISTS_DIR, SETUP_SCRIPTS_DIR
 
 
@@ -95,6 +95,18 @@ def build_parser():
     )
     moteus_config_parser.set_defaults(func=_run_moteus_save_config)
 
+    moteus_calibrate_parser = subparsers.add_parser(
+        "moteus-calibrate",
+        help="Calibrate moteus controllers using a YAML calibration file",
+    )
+    moteus_calibrate_parser.add_argument(
+        "calibration_file",
+        nargs="?",
+        type=Path,
+        help="Calibration YAML file (defaults to motor_config/calibration.yaml)",
+    )
+    moteus_calibrate_parser.set_defaults(func=_run_moteus_calibrate)
+
     return parser
 
 
@@ -133,6 +145,10 @@ def _run_docker(args):
 
 def _run_moteus_save_config(args):
     save_config(name=args.name)
+
+
+def _run_moteus_calibrate(args):
+    calibrate(args.calibration_file)
 
 
 def main():
