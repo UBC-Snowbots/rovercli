@@ -1,3 +1,4 @@
 pkgs_after_ros: 
   - libpigpio-dev
+  - pigpio
   - libpigpiod-dev
