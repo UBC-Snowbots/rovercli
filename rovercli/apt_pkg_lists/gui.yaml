@@ -1,0 +1,3 @@
+pkgs_start:
+  - libgtkmm-3.0-dev
+  - libsfml-dev
