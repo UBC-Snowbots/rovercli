@@ -102,7 +102,7 @@ def _run_calibration(target_id: int, command: list[str], log: dict) -> None:
 
 def get_available_moteus_ids() -> set[int]:
     result = subprocess.run(
-        ["moteus_tool", "--info"],
+        ["moteus_tool", "--info", "--can-disable-brs"],
         check=True,
         capture_output=True,
         text=True,
@@ -156,6 +156,7 @@ def calibrate(calibration_path: Optional[Path] = None) -> None:
             target_id,
             [
                 "moteus_tool",
+                "--can-disable-brs",
                 "--calibrate",
                 "--target",
                 str(target_id),

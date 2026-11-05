@@ -8,7 +8,7 @@ CONFIG_FOLDER = Path(__file__).resolve().parent.parent.parent / "motor_config"
 def save_config(name: str = "unnamed"):
     CONFIG_FOLDER.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
-        ["moteus_tool", "--dump-config"],
+        ["moteus_tool", "--dump-config", "--can-disable-brs"],
         check=True,
         capture_output=True,
         text=True,
