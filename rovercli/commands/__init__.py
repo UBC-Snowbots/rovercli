@@ -3,5 +3,18 @@ from .setup_roverflake import setup_roverflake
 from .sync import sync
 from .time_sync import time_sync
 from .start_docker import start_docker
+from .moteus_save_config import save_config
+from .moteus_load_config import load_config
+from .moteus_calibrate import calibrate, get_available_moteus_ids
 
-__all__ = ["print_ip_table", "setup_roverflake", "sync", "time_sync", "start_docker"]
+__all__ = [
+    "print_ip_table",
+    "setup_roverflake",
+    "sync",
+    "time_sync",
+    "start_docker",
+    "save_config",
+    "load_config",
+    "calibrate",
+    "get_available_moteus_ids",
+]
