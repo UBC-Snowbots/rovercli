@@ -16,8 +16,13 @@ DEVICES = [
 
 def print_ip_table():
     print("To create an alias, run sudo nano /etc/hosts and paste the following lines:")
+    print("# Rover network")
     for _, ip, alias, _ in DEVICES:
         print(f"{ip}\t{alias}")
+    print("# Rover ZeroTier (172.30.0.x)")
+    for _, _, alias, zt_ip in DEVICES:
+        if zt_ip:
+            print(f"{zt_ip}\t{alias}_zerotier")
 
     print(f"\n\n{'Device':<25} {'IP Address':<15} {'Alias':<10} {'ZeroTier IP':<15}")
     print("-" * 66)
