@@ -51,6 +51,20 @@ rovercli sync --src-root RoverFlake2 --dst-root RoverFlake2 --remote-host rv@192
 
 Other commands are `rovercli print-ip-table` and `rovercli time-sync`.
 
+## `setdds`
+Point CycloneDDS at either the rover network or ZeroTier. It rewrites only the `<Interfaces>` block of
+`$CYCLONEDDS_URI` (normally `RoverFlake2/network_stuff/dds_profile_cyclone.xml`) to one specific interface.
+The interface is found by address, not name.
+
+```sh
+rovercli setdds rover      # interface with a 192.168.1.x address
+rovercli setdds zerotier   # interface with a 172.30.0.x address (other ZeroTier networks are ignored)
+rovercli setdds auto       # rover if that network is connected, otherwise zerotier (decided once, now)
+rovercli setdds show       # print the current setting
+```
+
+Restart running ROS nodes afterwards; Cyclone only reads the profile at startup. Use `--iface <name>` to override detection.
+
 ## `moteus-save-config`
 Save the connected moteus configuration as one file per CAN ID in the
 `motor_config` directory:
