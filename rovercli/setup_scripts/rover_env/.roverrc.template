@@ -9,7 +9,6 @@ if [ -f "${ROVERFLAKE_ROOT}/install/setup.bash" ]; then
 fi
 export ROS_DOMAIN_ID=101
 export ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
-export ROS_INTERFACE=ztwdjkvykg
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export CYCLONEDDS_URI=file://${ROVERFLAKE_ROOT}/network_stuff/dds_profile_cyclone.xml
 @@CD_TO_RF

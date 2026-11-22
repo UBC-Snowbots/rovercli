@@ -6,6 +6,7 @@ from .start_docker import start_docker
 from .moteus_save_config import save_config
 from .moteus_load_config import load_config
 from .moteus_calibrate import calibrate, get_available_moteus_ids
+from .set_dds import set_dds
 
 __all__ = [
     "print_ip_table",
@@ -17,4 +18,5 @@ __all__ = [
     "load_config",
     "calibrate",
     "get_available_moteus_ids",
+    "set_dds",
 ]
