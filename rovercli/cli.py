@@ -1,7 +1,8 @@
 import argparse
 from pathlib import Path
 
-from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker, save_config, load_config, calibrate
+from .commands import print_ip_table, setup_roverflake, sync, time_sync, start_docker, save_config, load_config, calibrate, set_dds
+from .commands.set_dds import MODES as DDS_MODES
 from .commands.setup_roverflake import APT_PKG_LISTS_DIR, SETUP_SCRIPTS_DIR
 
 
@@ -58,6 +59,19 @@ def build_parser():
 
     ip_parser = subparsers.add_parser("print-ip-table", help="Print rover network addresses")
     ip_parser.set_defaults(func=lambda args: print_ip_table())
+
+    dds_parser = subparsers.add_parser(
+        "setdds",
+        help="Point CycloneDDS at the rover network or ZeroTier",
+        description=(
+            "Rewrite the <Interfaces> block of the CycloneDDS profile ($CYCLONEDDS_URI) to use one interface. "
+            "rover = 192.168.1.x, zerotier = 172.30.0.x, auto = rover if connected else zerotier, "
+            "show = print the current setting. Restart running ROS nodes afterwards."
+        ),
+    )
+    dds_parser.add_argument("mode", choices=DDS_MODES)
+    dds_parser.add_argument("--iface", help="Use this interface instead of detecting it by subnet")
+    dds_parser.set_defaults(func=lambda args: set_dds(args.mode, iface=args.iface))
 
     time_parser = subparsers.add_parser("time-sync", help="Synchronize time with a rover computer")
     time_parser.add_argument("--remote-host", default="rover")

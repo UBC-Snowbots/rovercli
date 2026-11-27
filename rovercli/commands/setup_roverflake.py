@@ -3,6 +3,8 @@ import subprocess, os
 import yaml
 from string import Template
 
+from .set_dds import write_default_profile
+
 ROVERFLAKE_GIT_HTTPS = "https://github.com/UBC-Snowbots/RoverFlake2.git"
 ROVERFLAKE_GIT_SSH = "git@github.com:UBC-Snowbots/RoverFlake2.git"
 
@@ -60,9 +62,9 @@ def setup_roverflake(dst: Path, pkg_list_files: list[Path], setup_scripts: list[
             )
             check_result(result, "Failed to configure git for HTTPS instead of SSH.")
 
-    dds = dst / "network_stuff" / "dds_profile_cyclone.xml"
-    if not dds.exists():
-        dds.touch(exist_ok=True)
+    # Default profile (autodetermine) so CYCLONEDDS_URI never points at an empty file.
+    # Pin it to one network afterwards with `rovercli setdds rover|zerotier`.
+    write_default_profile(dst / "network_stuff" / "dds_profile_cyclone.xml")
 
     os.environ["ROVERFLAKE_ROOT"] = str(dst)
     setup_scripts = [ROS_INSTALL, *setup_scripts]
